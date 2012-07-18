@@ -59,6 +59,10 @@ interface Pager
 
     public function getNextPageLink();
 
+    public function isFirstPage();
+
+    public function isLastPage();
+
     public function getPageLinks();
 
     /**

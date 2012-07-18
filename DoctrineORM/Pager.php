@@ -143,7 +143,7 @@ class Pager implements PagerInterface {
 
 	public function getLastPageLink()
 	{
-		$lastPage = $this->getMaxPages(); // 0-indexed
+		$lastPage = $this->getMaxPages(); 
 
 		return $this->getPageLink($lastPage);
 	}
@@ -158,6 +158,16 @@ class Pager implements PagerInterface {
 		}
 
 		return null;
+	}
+
+	public function isFirstPage()
+	{
+		return ($this->getCurrentPage() == 1);
+	}
+
+	public function isLastPage()
+	{
+		return ($this->getCurrentPage() == $this->getMaxPages());
 	}
 
 	/**
@@ -182,11 +192,12 @@ class Pager implements PagerInterface {
 
 		$links['first'] = array(
 			'href' => $this->getFirstPageLink(),
-			'class' => ''
+			'active' => $this->isFirstPage()
 		);
+
 		$links['previous'] = array(
 			'href' => $this->getPreviousPageLink(),
-			'class' => ''
+			'active' => $this->isFirstPage()
 		);
 
 		$adjacentLinks = array();
@@ -194,23 +205,19 @@ class Pager implements PagerInterface {
 		{
 			$adjacentLinks["$pageNumber"] = array(
 				'href' => $this->getPageLink($pageNumber),
-				'class' => ''
+				'active' => ($pageNumber == $this->getCurrentPage())
 			);
-
-			if ($pageNumber == $this->getCurrentPage())
-			{
-				$adjacentLinks["$pageNumber"]['class'] = 'active';
-			}
 		}
 		$links['adjacent'] = $adjacentLinks;
 
 		$links['next'] = array(
 			'href' => $this->getNextPageLink(),
-			'class' => ''
+			'active' => $this->isLastPage()
 		);
+
 		$links['last'] = array(
 			'href' => $this->getLastPageLink(),
-			'class' => ''
+			'active' => $this->isLastPage()
 		);
 
 		return $links;

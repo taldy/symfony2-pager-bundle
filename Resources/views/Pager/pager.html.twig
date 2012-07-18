@@ -3,30 +3,27 @@
 
 	<div class="pagination">
 		<ul>
-			<li class="{{ links['first']['class'] }}">
+			<li class="{{ links['first']['active'] ? 'disabled' : '' }}">
 				<a href="{{ links['first']['href'] }}">First</a>
 			</li>
-			{% if links['previous'] %}
-				<li class="{{ links['previous']['class'] }}">
-					<a href="{{ links['previous']['href'] }}">Previous</a>
-				</li>
-			{% endif %}
+
+			<li class="{{ links['previous']['active'] ? 'disabled' : '' }}">
+				<a href="{{ links['previous']['href'] }}">Previous</a>
+			</li>
 
 			{% if links['adjacent'] %}
 				{% for key,value in links['adjacent'] %}
-					<li class="{{ value['class'] }}">
+					<li class="{{ value['active'] ? 'active' : '' }}">
 						<a href="{{ value['href'] }}">{{ key }}</a>
 					</li>
 				{% endfor %}
 			{% endif %}
 
-			{% if links['next'] %}
-				<li class="{{ links['next']['class'] }}">
-					<a href="{{ links['next']['href'] }}">Next</a>
-				</li>
-			{% endif %}
+			<li class="{{ links['next']['active'] ? 'disabled' : '' }}">
+				<a href="{{ links['next']['href'] }}">Next</a>
+			</li>
 
-			<li class="{{ links['last']['class'] }}">
+			<li class="{{ links['last']['active'] ? 'disabled' : '' }}">
 				<a href="{{ links['last']['href'] }}">Last</a>
 			</li>
 		</ul>
