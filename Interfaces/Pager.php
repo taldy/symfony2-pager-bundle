@@ -59,8 +59,14 @@ interface Pager
 
     public function getNextPageLink();
 
+    /**
+     * Should return true if the page number is <= 1
+     */
     public function isFirstPage();
 
+    /**
+     * Should return true if the page number is >= getMaxPages
+     */
     public function isLastPage();
 
     public function getPageLinks();

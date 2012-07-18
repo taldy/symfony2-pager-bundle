@@ -160,14 +160,20 @@ class Pager implements PagerInterface {
 		return null;
 	}
 
+	/**
+	 * Should return true if the page number is <= 1
+	 */
 	public function isFirstPage()
 	{
-		return ($this->getCurrentPage() == 1);
+		return ($this->getCurrentPage() <= 1);
 	}
 
+	/**
+	 * Should return true if the page number is >= getMaxPages
+	 */
 	public function isLastPage()
 	{
-		return ($this->getCurrentPage() == $this->getMaxPages());
+		return ($this->getCurrentPage() >= $this->getMaxPages());
 	}
 
 	/**
@@ -273,7 +279,11 @@ class Pager implements PagerInterface {
 	protected function computeResults()
 	{
 		$pageNumber = $this->getCurrentPage();
-
+		if ($pageNumber < 1)
+		{
+			// Avoid SQL errors
+			$pageNumber = 1;
+		}
 
 		$paginatedQb = clone $this->queryBuilder;
 		$paginatedQb->setMaxResults($this->maxPerPage);
@@ -284,5 +294,9 @@ class Pager implements PagerInterface {
 		$countQb = clone $this->queryBuilder;
 		$countQb->select('COUNT(' . $countQb->getRootAlias() . '.id)');
 		$this->numResults = $countQb->getQuery()->getSingleScalarResult();
+		if ($this->getCurrentPage() > $this->getMaxPages())
+		{
+			$this->getCurrentPage = $this->getMaxPages();
+		}
 	}
 }
