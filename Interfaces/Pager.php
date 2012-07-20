@@ -14,11 +14,17 @@ interface Pager
 
     /**
      *
-     * Sets the query to paginate
+     * Sets the query to paginate. If a custom query builder should be used to
+     * get the count, supply it as the second argument. If you don't do this, the
+     * implementation should clone your main query builder and modify it to
+     * query for a row count as best it can. In some implementations this won't
+     * work with all queries (notably DoctrineORM when there are custom select aliases
+     * required for the query to work). If the count query builder results in a query
+     * that returns nothing, 0 is assumed.
      *
      * @param \Doctrine\ORM\QueryBuilder
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder);
+    public function setQueryBuilder(QueryBuilder $queryBuilder, QueryBuilder $countQueryBuilder = null);
 
     /**
      * 

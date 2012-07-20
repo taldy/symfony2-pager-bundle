@@ -47,11 +47,18 @@ class Pager implements PagerInterface {
 	 *
 	 * Sets the query to paginate
 	 *
+     * If you do not pass a $countQueryBuilder the main query builder is cloned and the select() clause is 
+     * changed to a COUNT DISTINCT of the id of the root alias, which works for most cases.
+     * If you have custom aliases in your select clause that are necessary for other clauses of your
+     * query to work you'll need to supply your own count query builder, which should return a
+     * single scalar containing the count. If the count query returns nothing 0 is assumed.
+     *
 	 * @param \Doctrine\ORM\QueryBuilder
 	 */
-	public function setQueryBuilder(QueryBuilder $queryBuilder)
+	public function setQueryBuilder(QueryBuilder $queryBuilder, QueryBuilder $countQueryBuilder = null)
 	{
 		$this->queryBuilder = $queryBuilder;
+		$this->countQueryBuilder = $countQueryBuilder;
 	}
 
 	/**
@@ -290,10 +297,26 @@ class Pager implements PagerInterface {
 		$paginatedQb->setFirstResult(($pageNumber - 1) * $this->maxPerPage); // -1 accounts for 1-indexing
 		$this->results = $paginatedQb->getQuery()->getResult();
 
-		// Efficiently compute the count without fetching everything
-		$countQb = clone $this->queryBuilder;
-		$countQb->select('COUNT(' . $countQb->getRootAlias() . '.id)');
-		$this->numResults = $countQb->getQuery()->getSingleScalarResult();
+		$countQb = $this->countQueryBuilder;
+		if (!$countQb)
+		{
+			// Efficiently compute the count without fetching everything. Works great unless you
+			// have custom aliases without which your query bombs. A Doctrine 2.2 paginator would be better 
+			// since that uses a subquery and doesn't get tripped up by removing aliases in the main query
+			$countQb = clone $this->queryBuilder;
+			$countQb->select('COUNT(' . $countQb->getRootAlias() . '.id) AS count_rows');
+		}
+		// If there are no matches and GROUP BY is present, getSingleScalarResult will throw an exception
+		// because mysql does not return a count. Don't have a cow in that situation. This doesn't
+		// happen in the absence of GROUP BY. Interesting, no?
+		try
+		{
+			$this->numResults = $countQb->getQuery()->getSingleScalarResult();
+		} catch (\Doctrine\ORM\NoResultException $e)
+		{
+			// This happens when zero rows are returned
+			$this->numResults = 0;
+		}
 		if ($this->getCurrentPage() > $this->getMaxPages())
 		{
 			$this->getCurrentPage = $this->getMaxPages();

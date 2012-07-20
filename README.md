@@ -61,6 +61,16 @@ Usage
 
 	$pager->setQueryBuilder($queryBuilder);
 
+The pager will automatically clone your query builder to carry out a separate query to count all
+rows. With the DoctrineORM pager, this is done by replacing the SELECT cause of your query builder
+with a simple count of distinct ids. This is very efficient because it avoids fetching all rows.
+Your JOINs, WHERE clauses, etc. remain intact, so in most cases this is sufficient. However you might 
+not have a primary key called id, or a SQL error may occur because you have custom aliases in the SELECT 
+clause of your query that are essential to other clauses of the query. In such cases, just create 
+your own query builder that returns a count of rows and pass it as a second argument to setQueryBuilder:
+
+    $pager->setQueryBuilder($queryBuilder, $countQueryBuilder);
+
 4) Pass the pager to the view:
 
 	return $this->render('Bundle:Module:view.html.twig', array(
