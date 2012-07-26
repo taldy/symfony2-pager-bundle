@@ -71,6 +71,16 @@ your own query builder that returns a count of rows and pass it as a second argu
 
     $pager->setQueryBuilder($queryBuilder, $countQueryBuilder);
 
+If it is simply not possible to construct a query builder object that returns the count of rows, you
+can still work around it! Count the rows yourself and call:
+    
+    $pager->setNumResults($n)
+
+Hint: when you can't retrieve the number of rows directly, you can still retrieve just
+the IDs and other aliases essential to your query, use getScalarResult() to avoid creating objects,
+and count() the result of that call. This is generally very fast, even for thousands of items. For
+millions of items, consider using Doctrine 2.2's new Paginator object instead.
+
 4) Pass the pager to the view:
 
 	return $this->render('Bundle:Module:view.html.twig', array(
