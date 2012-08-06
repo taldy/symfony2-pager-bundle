@@ -38,6 +38,12 @@ interface Pager
     public function setRoute($routeName, $routeParams = array());
 
     /**
+     * Should return true if number of results is greater than max per page
+     * @return boolean
+     */
+    public function needsPaging();
+
+    /**
      * 
      * Set the maximum number of results to display per page
      *

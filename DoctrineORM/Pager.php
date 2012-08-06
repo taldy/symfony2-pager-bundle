@@ -76,6 +76,11 @@ class Pager implements PagerInterface {
 		$this->routeParams = $routeParams;
 	}
 
+	public function needsPaging()
+	{
+		return $this->getNumResults() > $this->maxPerPage;
+	}
+
 	/**
 	 * 
 	 * Set the maximum number of results to display per page
