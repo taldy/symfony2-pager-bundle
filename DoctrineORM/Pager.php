@@ -111,6 +111,59 @@ class Pager implements PagerInterface {
 		return $this->numResults;
 	}
 
+  /**
+   * Call this when you already have an array or collection of objects 
+   * containing ALL of the results for the unpaginated query, and you 
+   * wish to bypass the Doctrine queries entirely. Technically it's not
+   * a DoctrineORM specific pager anymore if you use this method. Of course
+   * having to hydrate everything in memory is bad news and partially
+   * defeats the purpose of having a pager in the first place. In most
+   * cases this method is only used when you admit defeat and start filtering
+   * or sorting in PHP land rather than SQL, which is not a great thing. 
+   * You'll know the exceptions when you see them.
+   */
+
+  public function setAllResults($allResults)
+  {
+    $this->setNumResults(count($allResults));
+    $pageNumber = $this->getCurrentPage();
+    if ($pageNumber < 1)
+    {
+      // Avoid SQL errors
+      $pageNumber = 1;
+    }
+    $maxPerPage = $this->maxPerPage;
+    if (is_array($allResults))
+    {
+      $this->results = array_slice($allResults, ($this->pageNumber - 1) * $maxPerPage, $maxPerPage);
+    }
+    else
+    {
+      // Not a true array, so do it in a way that 
+      // implementations of ArrayAccess can support 
+      $offset = ($this->pageNumber - 1) * $maxPerPage;
+      $count = count($allResults);
+      $this->results = array();
+      for ($i = $offset; ($i < $count); $i++) {
+        $this->results[] = $allResults[$i];
+      }
+    }
+  }
+
+  /**
+   * When you can't use the query builder OR afford to hydrate
+   * all of the objects in the world... provide your own callback!
+   */
+  public function setCustomQueryEngine($queryEngine) {
+    if ($this->pageNumber < 1) 
+    {
+      $this->pageNumber = 1;
+    }
+    $offset = ($this->pageNumber - 1) * $this->maxPerPage;
+    $limit = $this->maxPerPage;
+    list($this->results, $this->numResults) = $queryEngine($offset, $limit);
+  }
+
 	/**
 	 * Call this before getNumResults() and getResults() if our standard method
 	 * of computing the total number of results is incompatible
@@ -121,6 +174,11 @@ class Pager implements PagerInterface {
 	{
 		$this->numResults = $n;
 	}
+
+  public function setResults($results)
+  {
+    $this->results = $results;
+  }
 
 	public function getResults()
 	{
