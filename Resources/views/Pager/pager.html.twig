@@ -4,11 +4,11 @@
 	<div class="pagination">
 		<ul>
 			<li class="{{ links['first']['active'] ? 'disabled' : '' }}">
-				<a href="{{ links['first']['href'] }}">First</a>
+				<a href="{{ links['first']['href'] }}">«</a>
 			</li>
 
 			<li class="{{ links['previous']['active'] ? 'disabled' : '' }}">
-				<a href="{{ links['previous']['href'] }}">Previous</a>
+				<a href="{{ links['previous']['href'] }}">‹</a>
 			</li>
 
 			{% if links['adjacent'] %}
@@ -20,11 +20,11 @@
 			{% endif %}
 
 			<li class="{{ links['next']['active'] ? 'disabled' : '' }}">
-				<a href="{{ links['next']['href'] }}">Next</a>
+				<a href="{{ links['next']['href'] }}">›</a>
 			</li>
 
 			<li class="{{ links['last']['active'] ? 'disabled' : '' }}">
-				<a href="{{ links['last']['href'] }}">Last</a>
+				<a href="{{ links['last']['href'] }}">»</a>
 			</li>
 		</ul>
 	</div>
