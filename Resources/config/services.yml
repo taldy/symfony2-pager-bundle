@@ -1,7 +1,11 @@
 parameters:
+    punk_ave.pager_factory.class: 'PunkAve\PagerBundle\Factories\PagerFactory'
+    punk_ave.pager_factory.options:
+        pager_classes:
+            "DoctrineORM": 'PunkAve\PagerBundle\DoctrineORM\Pager'
 
 services:
     punk_ave.pager_factory:
-        class: PunkAve\PagerBundle\Factories\PagerFactory
-        arguments: ['@router']
+        class: '%punk_ave.pager_factory.class%'
+        arguments: ['@router', '%punk_ave.pager_factory.options%']
 

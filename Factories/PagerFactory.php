@@ -4,32 +4,33 @@ namespace PunkAve\PagerBundle\Factories;
 
 class PagerFactory
 {
+    protected $router;
+    protected $options;
 
-    public function __construct($router)
+    public function __construct($router, array $options)
     {
         $this->router = $router;
+        $this->options = $options;
     }
 
     /**
      * Instanciates a new Pager of the type specified.
-     * Defaults to DoctrineORM
+     * Defaults to DoctrineORM.
      *
-     * @return PunkAve\PagerBundle\Interfaces\Pager
+     * @param string $type
+     * @return \PunkAve\PagerBundle\Interfaces\Pager
      */
     public function createPager($type = "DoctrineORM")
     {
-        switch($type)
-        {
-            case "DoctrineORM":
-            default:
-                return $this->instanciatePager('PunkAve\PagerBundle\DoctrineORM\Pager');
-        }
+        $class = isset($this->options['pager_classes'][$type]) ? $this->options['pager_classes'][$type] : 'PunkAve\PagerBundle\DoctrineORM\Pager';
+        return $this->instanciatePager($class);
     }
 
     /**
      * Returns a new pager with its dependencies injected.
      *
-     * @return PunkAve\PagerBundle\Interfaces\Pager
+     * @param string $class
+     * @return \PunkAve\PagerBundle\Interfaces\Pager
      */
     public function instanciatePager($class = 'PunkAve\PagerBundle\DoctrineORM\Pager')
     {
